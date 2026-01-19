@@ -1,8 +1,14 @@
-<!DOCTYPE html><html lang="ja">
+<!DOCTYPE html>
+<html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Teachable Machine PC風UI</title>  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>  <style>
+  <title>Teachable Machine PC風UI</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
+  <style>
     /* ===== PC風レイアウト ===== */
     body {
       margin: 0;
@@ -110,22 +116,30 @@
     .yellow.on { background: yellow; opacity: 1; }
     .green.on { background: lime; opacity: 1; }
 
-</style></head><body>
-  <header>Teachable Machine – PC風UI</header>  <div class="container">
-    <div class="left" id="webcam-container"></div><div class="right">
-  <button onclick="init()">Start</button>
-  <button onclick="switchCamera()">Switch Camera</button>
+</style>
+</head>
 
-  <div id="signal">
-    <div class="light red"></div>
-    <div class="light yellow"></div>
-    <div class="light green"></div>
+<body>
+  <header>Teachable Machine – PC風UI</header>
+
+  <div class="container">
+    <div class="left" id="webcam-container"></div>
+
+    <div class="right">
+      <button onclick="init()">Start</button>
+      <button onclick="switchCamera()">Switch Camera</button>
+
+      <div id="signal">
+        <div class="light red"></div>
+        <div class="light yellow"></div>
+        <div class="light green"></div>
+      </div>
+
+      <div id="label-container"></div>
+    </div>
   </div>
 
-  <div id="label-container"></div>
-</div>
-
-  </div><script>
+<script>
   const URL = "https://teachablemachine.withgoogle.com/models/DisM17N1Q/"; // ★自分のモデルURLに変更
 
   let model, webcam, labelContainer, maxPredictions;
@@ -198,5 +212,6 @@
     if (webcam) webcam.stop();
     await init();
   }
-</script></body>
+</script>
+</body>
 </html>
