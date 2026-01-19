@@ -86,11 +86,42 @@
         font-size: 13px;
       }
     }
-  </style></head><body>
+      #signal {
+      width: 80px;
+      margin: 10px auto 15px;
+      padding: 10px;
+      background: #111;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .light {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #333;
+      opacity: 0.3;
+      margin: auto;
+    }
+
+    .red.on { background: red; opacity: 1; }
+    .yellow.on { background: yellow; opacity: 1; }
+    .green.on { background: lime; opacity: 1; }
+
+</style></head><body>
   <header>Teachable Machine – PC風UI</header>  <div class="container">
     <div class="left" id="webcam-container"></div><div class="right">
   <button onclick="init()">Start</button>
   <button onclick="switchCamera()">Switch Camera</button>
+
+  <div id="signal">
+    <div class="light red"></div>
+    <div class="light yellow"></div>
+    <div class="light green"></div>
+  </div>
+
   <div id="label-container"></div>
 </div>
 
@@ -135,10 +166,26 @@
 
   async function predict() {
     const prediction = await model.predict(webcam.canvas);
+
+    // いったん全部消灯
+    document.querySelectorAll('.light').forEach(l => l.classList.remove('on'));
+
     for (let i = 0; i < maxPredictions; i++) {
+      const p = prediction[i];
       labelContainer.childNodes[i].innerHTML =
-        prediction[i].className + " : " + prediction[i].probability.toFixed(2);
+        p.className + " : " + p.probability.toFixed(2);
+
+      // ★ 70%以上で点灯
+      if (p.probability >= 0.7) {
+        if (p.className.toLowerCase().includes('red'))
+          document.querySelector('.red').classList.add('on');
+        if (p.className.toLowerCase().includes('yellow'))
+          document.querySelector('.yellow').classList.add('on');
+        if (p.className.toLowerCase().includes('green'))
+          document.querySelector('.green').classList.add('on');
+      }
     }
+  }
   }
 
   async function switchCamera() {
