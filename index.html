@@ -2,21 +2,100 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TM スマホ外カメ対応</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-  <style>
-    body { font-family: sans-serif; text-align: center; }
-    button { font-size: 18px; padding: 10px 20px; margin: 5px; }
-  </style>
-</head>
-<body>
-  <h2>Teachable Machine（スマホ外カメ）</h2>
-  <button onclick="init()">開始</button>
-  <button onclick="switchCamera()">カメラ切替</button>
-  <div id="webcam-container"></div>
-  <div id="label-container"></div><script>
-  const URL = "https://teachablemachine.withgoogle.com/models/DisM17N1Q/"; // ←ここを自分のモデルURLに
+  <title>Teachable Machine PC風UI</title>  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>  <style>
+    /* ===== PC風レイアウト ===== */
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #1e1e1e;
+      color: #fff;
+    }
+
+    header {
+      background: #2d2d2d;
+      padding: 12px 20px;
+      font-size: 20px;
+      font-weight: bold;
+      border-bottom: 1px solid #444;
+    }
+
+    .container {
+      display: flex;
+      height: calc(100vh - 50px);
+    }
+
+    .left {
+      flex: 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+    }
+
+    .right {
+      flex: 1;
+      background: #252526;
+      padding: 15px;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+
+    canvas {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      background: #007acc;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+
+    button:active {
+      background: #005f99;
+    }
+
+    .label {
+      padding: 6px 0;
+      border-bottom: 1px solid #444;
+      font-size: 14px;
+    }
+
+    /* ===== スマホでもPCっぽく見せる ===== */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column; /* 縦向きレイアウト */
+      }
+      .left {
+        flex: none;
+        height: 55vh;
+      }
+      .right {
+        flex: none;
+        height: 45vh;
+        font-size: 15px;
+      }
+    }
+
+      .right {
+        font-size: 13px;
+      }
+    }
+  </style></head><body>
+  <header>Teachable Machine – PC風UI</header>  <div class="container">
+    <div class="left" id="webcam-container"></div><div class="right">
+  <button onclick="init()">Start</button>
+  <button onclick="switchCamera()">Switch Camera</button>
+  <div id="label-container"></div>
+</div>
+
+  </div><script>
+  const URL = "https://teachablemachine.withgoogle.com/models/DisM17N1Q/"; // ★自分のモデルURLに変更
 
   let model, webcam, labelContainer, maxPredictions;
   let useFront = false; // false = 外カメ
@@ -28,20 +107,23 @@
     model = await tmImage.load(modelURL, metadataURL);
     maxPredictions = model.getTotalClasses();
 
-    webcam = new tmImage.Webcam(224, 224, false);
+    webcam = new tmImage.Webcam(640, 480, false); // PCっぽい解像度
     await webcam.setup({
       facingMode: useFront ? "user" : { exact: "environment" }
     });
     await webcam.play();
     window.requestAnimationFrame(loop);
 
-    document.getElementById("webcam-container").innerHTML = "";
-    document.getElementById("webcam-container").appendChild(webcam.canvas);
+    const wc = document.getElementById("webcam-container");
+    wc.innerHTML = "";
+    wc.appendChild(webcam.canvas);
 
     labelContainer = document.getElementById("label-container");
     labelContainer.innerHTML = "";
     for (let i = 0; i < maxPredictions; i++) {
-      labelContainer.appendChild(document.createElement("div"));
+      const div = document.createElement("div");
+      div.className = "label";
+      labelContainer.appendChild(div);
     }
   }
 
@@ -55,7 +137,7 @@
     const prediction = await model.predict(webcam.canvas);
     for (let i = 0; i < maxPredictions; i++) {
       labelContainer.childNodes[i].innerHTML =
-        prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+        prediction[i].className + " : " + prediction[i].probability.toFixed(2);
     }
   }
 
