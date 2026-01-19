@@ -139,9 +139,14 @@
     maxPredictions = model.getTotalClasses();
 
     webcam = new tmImage.Webcam(640, 480, false); // PCっぽい解像度
-    await webcam.setup({
-      facingMode: useFront ? "user" : { exact: "environment" }
-    });
+        try {
+      await webcam.setup({
+        facingMode: useFront ? "user" : "environment"
+      });
+    } catch (e) {
+      // フォールバック（端末依存対策）
+      await webcam.setup();
+    }
     await webcam.play();
     window.requestAnimationFrame(loop);
 
